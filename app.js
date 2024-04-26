@@ -1,20 +1,23 @@
+// python -m http.server
+
 // const API_KEY = '6YAR8W4D56ZHXWYF';
 // const API_KEY = 'YAXID3YY1BSV1124';
 // const API_KEY ="M6C9GD28AZ8GQKKG";
-const BASE_URL = 'https://www.alphavantage.co/query';
-const PORTFOLIO_FILE = 'scores.json';
+const API_KEY = 'pk_1671fce8db02437bb8edb8fa29ae6197';
+const BASE_URL = 'https://cloud.iexapis.com/stable';
+const PORTFOLIO_FILE = 'scores.json'
 
-// Function to fetch stock prices from Alpha Vantage
+// Function to fetch stock prices from IEX Cloud
 async function getStockPrice(symbol) {
-    const response = await fetch(`${BASE_URL}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`);
+    const response = await fetch(`${BASE_URL}/stock/${symbol}/quote?token=${API_KEY}`);
     const data = await response.json();
-    console.log(data)
+    
     // Check if the expected properties exist in the response object
-    if (!data || !data['Global Quote'] || !data['Global Quote']['05. price']) {
+    if (!data || !data.latestPrice) {
         throw new Error('Failed to fetch stock price');
     }
-    const price = parseFloat(data['Global Quote']['05. price']);
-    return price;
+    
+    return data.latestPrice;
 }
 
 
@@ -40,7 +43,7 @@ function saveUserData(username, userData) {
         .then(data => {
             data[username] = userData;
             return fetch(PORTFOLIO_FILE, {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
