@@ -163,12 +163,12 @@ def main(user_name):  # Pass user_name as an argument
     coin_image = "coin.png"  # Specify path to the coin image
 
     # Create red car instances with random images
-    for _ in range(2):  # Example: spawn 5 red cars
+    for _ in range(2):  # Example: spawn 2 red cars
         red_car = RedCar(random.choice(red_car_images))
         all_sprites.add(red_car)
 
     # Create custom coin
-    for _ in range(0):  # Example: spawn 3 coins
+    for _ in range(0):  # Example: spawn 1 coins
         coin = Coin(coin_image)
         all_sprites.add(coin)
 
