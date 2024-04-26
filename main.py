@@ -16,7 +16,7 @@ BLACK = (0, 0, 0)
 
 # Initialize the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Rally Racing")
+pygame.display.set_caption("Rally Trader")
 
 clock = pygame.time.Clock()
 
@@ -81,9 +81,9 @@ def save_score(user_name, score):
     with open("scores.json", "r") as file:
         data = json.load(file)
     if user_name not in data:
-        data[user_name][credits] = score
+        data[user_name]["credits"] = score
     else:
-        data[user_name][credits] += score
+        data[user_name]["credits"] += score
     with open("scores.json", "w") as file:
         json.dump(data, file, indent=4)
 
