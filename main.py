@@ -81,9 +81,9 @@ def save_score(user_name, score):
     with open("scores.json", "r") as file:
         data = json.load(file)
     if user_name not in data:
-        data[user_name] = score
+        data[user_name][credits] = score
     else:
-        data[user_name] += score
+        data[user_name][credits] += score
     with open("scores.json", "w") as file:
         json.dump(data, file, indent=4)
 

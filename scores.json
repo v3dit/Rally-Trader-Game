@@ -1,4 +1,18 @@
 {
-    "vedit": 60.00,
-    "v": 100.00
-}
+    "vedit": {
+      "credits": 1000,
+      "portfolio": {
+        "AAPL": 10,
+        "GOOGL": 5,
+        "MSFT": 8
+      }
+    },
+    "v": {
+      "credits": 1500,
+      "portfolio": {
+        "AAPL": 8,
+        "MSFT": 12
+      }
+    }
+  }
+  
