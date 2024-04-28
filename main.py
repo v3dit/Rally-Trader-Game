@@ -23,6 +23,15 @@ clock = pygame.time.Clock()
 # Load background image
 background_image = pygame.image.load("background.png").convert()
 
+# Load background music
+pygame.mixer.music.load("sound.mp3")
+pygame.mixer.music.set_volume(0.5)  # Set volume level
+pygame.mixer.music.play(-1)  # Play the music on loop
+
+# Load sound effects
+coin_sound = pygame.mixer.Sound("coin.wav")
+collision_sound = pygame.mixer.Sound("crash.wav")
+
 class PlayerCar(pygame.sprite.Sprite):
     def __init__(self, image_path):
         super().__init__()
@@ -218,12 +227,14 @@ def main(user_name):  # Pass user_name as an argument
         hits = pygame.sprite.spritecollide(player, red_cars, False)
         if hits:
             running = False
+            collision_sound.play()  # Play collision sound
             save_score(user_name, score)
 
         # Check for collisions with coins
         coin_hits = pygame.sprite.spritecollide(player, coins, True)
         for coin in coin_hits:
             score += 10
+            coin_sound.play()  # Play coin sound
 
         all_sprites.update()
 
