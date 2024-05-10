@@ -1,0 +1,62 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+  }
+  
+  .heading {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .play-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  #run-game-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+  
+  #run-game-btn:hover {
+    background-color: #0062cc;
+  }
+  
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  #username, #credits {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  
+  #stock-table-body {
+    empty-cells: show; /* Show borders for empty cells */
+  }
+  
+  /* Add additional styles for a professional look as needed (e.g., fonts, colors, spacing) */
+  

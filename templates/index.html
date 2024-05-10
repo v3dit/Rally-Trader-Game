@@ -1,36 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
     <title>Stock Market Game</title>
     <style>
-        /* Add your custom CSS styles here */
-    </style>
-</head>
-<body>
-    <h1>Stock Market Game</h1>
-    <div>
-        <h2>Your Credits: <span id="credits">0</span></h2>
-        <h2>Your Portfolio:</h2>
-        <div id="portfolio"></div>
-        <label for="company">Select a Company:</label>
-        <select id="company">
-            <option value="AAPL">Apple Inc. (AAPL)</option>
-            <option value="GOOGL">Alphabet Inc. (GOOGL)</option>
-            <option value="MSFT">Microsoft Corporation (MSFT)</option>
-            <!-- Add more options here -->
-        </select>
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" min="1">
-        <button onclick="buyStock()">Buy</button>
-        <button onclick="sellStock()">Sell</button>
-    </div>
-    <div id="stockPrices">
-        <!-- Stock prices will be displayed here -->
-    </div>
+      :root {
+        --background-color: #222;
+        --text-color: #ddd;
+        --primary-color: #007bff;
+        --primary-color-hover: #0062cc;
+        --border-color: #444;
+      }
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="app.js"></script>
-</body>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 15px;
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
+
+      .heading {
+        text-align: center;
+        padding: 20px 0;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--text-color);
+      }
+
+      .play-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      #run-game-btn {
+        float: right;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #242424;
+        color: white;
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+
+      #run-game-btn:hover {
+        background-color: #dedede;
+        color: black;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 0 auto;
+        background-color: var(--background-color);
+      }
+
+      th,
+      td {
+        border: 1px solid var(--border-color);
+        padding: 8px;
+        text-align: left;
+        color: var(--text-color);
+      }
+
+      th {
+        background-color: var(--border-color);
+        font-weight: bold;
+      }
+
+      #username,
+      #credits {
+        display: inline-block;
+        margin-right: 10px;
+        color: var(--text-color);
+      }
+
+      #stock-table-body {
+        empty-cells: show; /* Show borders for empty cells */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Stocks Rally Racing</h1>
+    <p id="run-game-btn">
+      Play to Earn credits&nbsp;<button onclick="runGame()">
+        Play Rally Racer
+      </button>
+    </p>
+    <h2>Welcome, <span id="username">{{ username }}</span>!</h2>
+    <h3>Current Balance: <span id="credits">0</span></h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Stock Name</th>
+          <th>Stock Symbol</th>
+          <th>Current Price</th>
+          <th>No. of Stocks Owned</th>
+          <th>Buy</th>
+          <th>Sell</th>
+        </tr>
+      </thead>
+      <tbody id="stock-table-body">
+        <!-- Stock items will be displayed here -->
+      </tbody>
+    </table>
+
+    <script>
+      // Function to run the game
+      function runGame() {
+        const username = document.getElementById("username").textContent;
+        fetch(`/run_game?username=${username}`)
+          .then((response) => {
+            if (response.ok) {
+              console.log("Game is running...");
+            } else {
+              throw new Error("Failed to start the game");
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Failed to start the game");
+          });
+      }
+
+      // Function to display stock table
+      function displayStockTable(stockData) {
+        const stockTableBody = document.getElementById("stock-table-body");
+        stockTableBody.innerHTML = "";
+
+        stockData.forEach((stock) => {
+          const row = document.createElement("tr");
+
+          const nameCell = document.createElement("td");
+          nameCell.textContent = stock.name;
+          row.appendChild(nameCell);
+
+          const symbolCell = document.createElement("td");
+          symbolCell.textContent = stock.symbol;
+          row.appendChild(symbolCell);
+
+          const priceCell = document.createElement("td");
+          priceCell.textContent = stock.price;
+          row.appendChild(priceCell);
+
+          const ownedCell = document.createElement("td");
+          ownedCell.textContent = stock.owned;
+          row.appendChild(ownedCell);
+
+          const buyCell = document.createElement("td");
+          const buyButton = document.createElement("button");
+          buyButton.textContent = "Buy";
+          buyButton.onclick = function () {
+            buyStock(stock.symbol);
+          };
+          buyCell.appendChild(buyButton);
+          row.appendChild(buyCell);
+
+          const sellCell = document.createElement("td");
+          const sellButton = document.createElement("button");
+          sellButton.textContent = "Sell";
+          sellButton.onclick = function () {
+            sellStock(stock.symbol);
+          };
+          sellCell.appendChild(sellButton);
+          row.appendChild(sellCell);
+
+          stockTableBody.appendChild(row);
+        });
+      }
+
+      // Function to buy stocks
+      async function buyStock(symbol) {
+        const username = document.getElementById("username").textContent;
+        const quantity = parseFloat(prompt("Enter quantity to buy:"));
+
+        if (!quantity || quantity <= 0) {
+          alert("Invalid quantity!");
+          return;
+        }
+
+        const response = await fetch("/buy", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, symbol, quantity }),
+        });
+
+        if (response.ok) {
+          alert("Stock bought successfully!");
+          location.reload();
+        } else {
+          const errorMessage = await response.text();
+          alert(errorMessage);
+        }
+      }
+
+      // Function to sell stocks
+      async function sellStock(symbol) {
+        const username = document.getElementById("username").textContent;
+        const quantity = parseFloat(prompt("Enter quantity to sell:"));
+
+        if (!quantity || quantity <= 0) {
+          alert("Invalid quantity!");
+          return;
+        }
+
+        const response = await fetch("/sell", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, symbol, quantity }),
+        });
+
+        if (response.ok) {
+          alert("Stock sold successfully!");
+          location.reload();
+        } else {
+          const errorMessage = await response.text();
+          alert(errorMessage);
+        }
+      }
+
+      // Function to load user data and stock data when the page loads
+      window.onload = async () => {
+        const username = document.getElementById("username").textContent;
+        const userResponse = await fetch(`/user/${username}`);
+        if (!userResponse.ok) {
+          alert("User not found!");
+          return;
+        }
+        const userData = await userResponse.json();
+        document.getElementById("credits").textContent = userData.credits;
+
+        const stockResponse = await fetch(`${username}/stocks`);
+        if (!stockResponse.ok) {
+          alert("Failed to fetch stock data!");
+          return;
+        }
+        const stockData = await stockResponse.json();
+        displayStockTable(stockData);
+      };
+    </script>
+  </body>
 </html>

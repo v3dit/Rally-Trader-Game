@@ -24,13 +24,14 @@ clock = pygame.time.Clock()
 background_image = pygame.image.load("background.png").convert()
 
 # Load background music
-pygame.mixer.music.load("sound.mp3")
-pygame.mixer.music.set_volume(0.5)  # Set volume level
+pygame.mixer.music.load("sound1.mp3")
+pygame.mixer.music.set_volume(0.2)  # Set volume level
 pygame.mixer.music.play(-1)  # Play the music on loop
 
 # Load sound effects
 coin_sound = pygame.mixer.Sound("coin.wav")
 collision_sound = pygame.mixer.Sound("crash.wav")
+
 
 class PlayerCar(pygame.sprite.Sprite):
     def __init__(self, image_path):
@@ -56,6 +57,7 @@ class PlayerCar(pygame.sprite.Sprite):
         elif self.rect.bottom > SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
 
+
 class RedCar(pygame.sprite.Sprite):
     def __init__(self, image_path):
         super().__init__()
@@ -70,6 +72,7 @@ class RedCar(pygame.sprite.Sprite):
         self.rect.y += self.speed
         if self.rect.top > SCREEN_HEIGHT:
             self.kill()
+
 
 class Coin(pygame.sprite.Sprite):
     def __init__(self, image_path):
@@ -86,15 +89,22 @@ class Coin(pygame.sprite.Sprite):
         if self.rect.top > SCREEN_HEIGHT:
             self.kill()
 
+
 def save_score(user_name, score):
-    with open("scores.json", "r") as file:
-        data = json.load(file)
+    try:
+        with open("scores.json", "r") as file:
+            try:
+                data = json.load(file)
+            except json.JSONDecodeError:
+                data = {}
+    except FileNotFoundError:
+        data = {}  # Create an empty dictionary if the file doesn't exist
     if user_name not in data:
-        data[user_name]["credits"] = score
-    else:
-        data[user_name]["credits"] += score
+        data[user_name] = {"credits": 1000, "portfolio":{}}
+    data[user_name]["credits"] += score
     with open("scores.json", "w") as file:
         json.dump(data, file, indent=4)
+
 
 def get_user_name():
     running = True
@@ -103,7 +113,8 @@ def get_user_name():
         screen.fill(WHITE)
         font = pygame.font.Font(None, 36)
         text = font.render("Enter Your Name:", True, BLACK)
-        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+        text_rect = text.get_rect(
+            center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
         screen.blit(text, text_rect)
 
         input_rect = pygame.Rect(150, SCREEN_HEIGHT // 2, 200, 50)
@@ -129,6 +140,7 @@ def get_user_name():
         clock.tick(30)
     return user_name
 
+
 def main(user_name):  # Pass user_name as an argument
     start_button = pygame.Rect(200, 400, 100, 50)
     quit_button = pygame.Rect(200, 475, 100, 50)  # Define quit button
@@ -137,7 +149,8 @@ def main(user_name):  # Pass user_name as an argument
         screen.fill(WHITE)
         font = pygame.font.Font(None, 36)
         text = font.render("Rally Racing", True, BLACK)
-        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+        text_rect = text.get_rect(
+            center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
         screen.blit(text, text_rect)
 
         pygame.draw.rect(screen, BLACK, start_button)
@@ -157,7 +170,8 @@ def main(user_name):  # Pass user_name as an argument
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
                     running = False
-                elif quit_button.collidepoint(event.pos):  # Check if quit button is clicked
+                # Check if quit button is clicked
+                elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     quit()
 
@@ -168,7 +182,8 @@ def main(user_name):  # Pass user_name as an argument
     all_sprites = pygame.sprite.Group(player)  # Add player to all_sprites
 
     # Load custom images for red cars and coin
-    red_car_images = ["1.png","2.png","3.png", "4.png", "5.png", "6.png", "7.png"]  # Specify paths to red car images
+    red_car_images = ["1.png", "2.png", "3.png", "4.png", "5.png",
+                      "6.png", "7.png"]  # Specify paths to red car images
     coin_image = "coin.png"  # Specify path to the coin image
 
     # Create red car instances with random images
@@ -276,9 +291,11 @@ def main(user_name):  # Pass user_name as an argument
                 if restart_button.collidepoint(event.pos):
                     # Reset game state
                     main(user_name)  # Pass user_name to main function
-                elif quit_button.collidepoint(event.pos):  # Check if quit button is clicked
+                # Check if quit button is clicked
+                elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     quit()
+
 
 if __name__ == "__main__":
     user_name = get_user_name()  # Get user name only once at the beginning
